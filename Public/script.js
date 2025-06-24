@@ -1,4 +1,10 @@
-const domains = ["1secmail.com"];
+const domains = [
+  "@1secmail.com",
+  "@dcctb.com",
+  "@esiix.com",
+  "@wwjmp.com"
+];
+
 let currentEmail = "";
 let inboxInterval;
 
