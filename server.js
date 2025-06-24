@@ -1,52 +1,35 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-
+const express = require("express");
+const fetch = require("node-fetch");
+const path = require("path");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// ✅ Use fetch workaround for CommonJS
-const fetch = (...args) =>
-  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+app.use(express.static("public")); // serve HTML/CSS/JS
 
-app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ✅ Email inbox API route
-app.get('/inbox', async (req, res) => {
+app.get("/inbox", async (req, res) => {
   const { login, domain } = req.query;
-  const url = `https://www.1secmail.com/api/v1/?action=getMessages&login=${login}&domain=${domain}`;
-
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' // ✅ helps avoid 403
-      }
-    });
-
-    const text = await response.text();
-    console.log("RAW RESPONSE FROM 1SECMAIL:", text);
-
-    try {
-      const data = JSON.parse(text);
-      res.json(data);
-    } catch (jsonErr) {
-      console.error("❌ JSON parse failed:", jsonErr);
-      res.status(502).send("Received non-JSON from 1secmail (maybe blocked or down)");
-    }
-
+    const response = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${login}&domain=${domain}`);
+    const json = await response.json();
+    res.json(json);
   } catch (err) {
     console.error("API fetch error:", err);
-    res.status(500).json({ error: 'Failed to fetch inbox' });
+    res.status(500).send("Failed to fetch inbox");
   }
 });
 
-// ✅ Serve frontend on /
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get("/email", async (req, res) => {
+  const { id, login, domain } = req.query;
+  try {
+    const response = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${login}&domain=${domain}&id=${id}`);
+    const json = await response.json();
+    res.json(json);
+  } catch (err) {
+    console.error("Email fetch error:", err);
+    res.status(500).send("Failed to fetch message");
+  }
 });
 
-// ✅ Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
