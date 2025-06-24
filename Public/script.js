@@ -15,6 +15,32 @@ function generateEmail() {
   if (autoRefreshInterval) clearInterval(autoRefreshInterval);
   autoRefreshInterval = setInterval(fetchInbox, 10000);
 }
+function fetchInbox() {
+  const email = currentEmail;
+  const [login, domain] = email.split('@');
+
+  fetch(`/inbox?login=${login}&domain=${domain}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.length === 0) {
+        document.getElementById('inboxContent').innerHTML = "<p>No emails yet.</p>";
+        return;
+      }
+
+      let html = "<ul>";
+      data.forEach(msg => {
+        html += `<li>
+          <strong>${msg.from}</strong> - ${msg.subject}
+          <button onclick="readEmail(${msg.id})">Read</button>
+        </li>`;
+      });
+      html += "</ul>";
+      document.getElementById("inboxContent").innerHTML = html;
+    })
+    .catch(err => {
+      console.error("Inbox fetch failed:", err);
+    });
+}
 
 // Copy email
 function copyEmail() {
