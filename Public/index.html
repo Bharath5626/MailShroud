@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Temp Mail Generator</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <div class="container">
+    <h1>Temporary Email Generator</h1>
+
+    <div class="email-generator">
+      <input type="text" id="tempEmail" placeholder="Generated Email" readonly />
+      <button id="generateBtn">Generate</button>
+      <button id="copyBtn">Copy</button>
+    </div>
+
+    <div class="inbox">
+      <h3>Inbox</h3>
+      <div id="inboxContent">
+        <p>No emails yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
