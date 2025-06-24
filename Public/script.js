@@ -1,29 +1,42 @@
-const domain = "1secmail.com";
-let login = "";
+const domains = ["1secmail.com"];
 let currentEmail = "";
-let autoRefreshInterval = null;
+let inboxInterval;
 
-// Generate random email
 function generateEmail() {
-  login = Math.random().toString(36).substring(2, 10);
-  currentEmail = `${login}@${domain}`;
-  document.getElementById("tempEmail").value = currentEmail;
-  document.getElementById("inboxContent").innerHTML = `<p>Checking inbox...</p>`;
-  fetchInbox();
-
-  // Auto-refresh every 10 sec
-  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-  autoRefreshInterval = setInterval(fetchInbox, 10000);
+  const username = Math.random().toString(36).substring(2, 10);
+  const domain = domains[0];
+  return `${username}@${domain}`;
 }
-function fetchInbox() {
-  const email = currentEmail;
-  const [login, domain] = email.split('@');
 
+function updateUI() {
+  currentEmail = generateEmail();
+  document.getElementById("tempEmail").value = currentEmail;
+
+  document.getElementById("inboxContent").innerHTML = `
+    <p><strong>Generated email:</strong> ${currentEmail}</p>
+    <p><em>Inbox is active. Waiting for emails...</em></p>
+    <p style="color: gray; font-size: 0.9em;">Emails will appear here if sent to the address.</p>
+  `;
+
+  clearInterval(inboxInterval);
+  inboxInterval = setInterval(() => {
+    if (currentEmail) fetchInbox();
+  }, 5000);
+}
+
+function copyEmail() {
+  const emailInput = document.getElementById("tempEmail");
+  emailInput.select();
+  navigator.clipboard.writeText(emailInput.value);
+}
+
+function fetchInbox() {
+  const [login, domain] = currentEmail.split('@');
   fetch(`/inbox?login=${login}&domain=${domain}`)
     .then(res => res.json())
     .then(data => {
       if (data.length === 0) {
-        document.getElementById('inboxContent').innerHTML = "<p>No emails yet.</p>";
+        document.getElementById("inboxContent").innerHTML = "<p>No emails yet.</p>";
         return;
       }
 
@@ -37,69 +50,25 @@ function fetchInbox() {
       html += "</ul>";
       document.getElementById("inboxContent").innerHTML = html;
     })
-    .catch(err => {
-      console.error("Inbox fetch failed:", err);
-    });
+    .catch(err => console.error("Inbox fetch failed:", err));
 }
 
-// Copy email
-function copyEmail() {
-  const email = document.getElementById("tempEmail").value;
-  navigator.clipboard.writeText(email)
-    .then(() => alert("Copied to clipboard!"));
-}
-
-// Fetch inbox message list
-function fetchInbox() {
-  if (!login) return;
-
-  fetch(`/inbox?login=${login}&domain=${domain}`)
-    .then(res => res.json())
-    .then(messages => {
-      if (!Array.isArray(messages) || messages.length === 0) {
-        document.getElementById("inboxContent").innerHTML = "<p>No new emails yet.</p>";
-        return;
-      }
-
-      const inboxHTML = messages.map(msg => `
-        <div class="email-item">
-          <div><strong>From:</strong> ${msg.from}</div>
-          <div><strong>Subject:</strong> ${msg.subject}</div>
-          <button onclick="readMessage(${msg.id})">Read</button>
-        </div>
-      `).join('');
-      document.getElementById("inboxContent").innerHTML = inboxHTML;
-    })
-    .catch(err => {
-      console.error("Inbox fetch failed:", err);
-      document.getElementById("inboxContent").innerHTML = `<p style="color:red;">Failed to fetch inbox</p>`;
-    });
-}
-
-// Read full message
-function readMessage(msgId) {
-  const url = `https://www.1secmail.com/api/v1/?action=readMessage&login=${login}&domain=${domain}&id=${msgId}`;
-  fetch(url)
+function readEmail(id) {
+  const [login, domain] = currentEmail.split('@');
+  fetch(`/email?id=${id}&login=${login}&domain=${domain}`)
     .then(res => res.json())
     .then(data => {
-      const content = `
-        <div class="email-body">
-          <h4>${data.subject}</h4>
-          <p><strong>From:</strong> ${data.from}</p>
-          <p><strong>Date:</strong> ${data.date}</p>
-          <hr>
-          <div>${data.htmlBody || data.textBody || "<em>No content</em>"}</div>
-        </div>
+      const body = data.htmlBody || data.textBody || "(No content)";
+      document.getElementById("inboxContent").innerHTML = `
+        <h4>${data.subject}</h4>
+        <p><strong>From:</strong> ${data.from}</p>
+        <hr>
+        <div>${body}</div>
+        <br><button onclick="fetchInbox()">← Back to Inbox</button>
       `;
-      document.getElementById("inboxContent").innerHTML = content;
     })
-    .catch(err => {
-      console.error("Failed to load message", err);
-      alert("Error loading message.");
-    });
+    .catch(err => console.error("Failed to fetch email:", err));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("generateBtn").addEventListener("click", generateEmail);
-  document.getElementById("copyBtn").addEventListener("click", copyEmail);
-});
+document.getElementById("generateBtn").addEventListener("click", updateUI);
+document.getElementById("copyBtn").addEventListener("click", copyEmail);
