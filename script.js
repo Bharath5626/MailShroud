@@ -8,12 +8,14 @@ const domains = [
     "@dcctb.com"
 ];
 
-// Proxy configuration
+// GitHub Pages compatible proxy solutions
 const PROXIES = [
-    "https://corsproxy.io/?",  // Reliable proxy
+    // No proxy (direct connection - may fail due to CORS)
+    "",
+    // GitHub-friendly proxies
     "https://api.allorigins.win/raw?url=",
-    "https://cors-anywhere.herokuapp.com/",
-    "" // Fallback to direct connection (may fail due to CORS)
+    "https://thingproxy.freeboard.io/fetch/",
+    "https://yacdn.org/proxy/"
 ];
 
 // App state
@@ -36,15 +38,16 @@ function init() {
     checkDarkModePreference();
 }
 
-// Proxy-enabled fetch function
+// GitHub Pages compatible fetch function
 async function proxyFetch(url) {
     let lastError = null;
     
     for (const proxy of PROXIES) {
         try {
-            const proxyUrl = proxy + encodeURIComponent(url);
+            const proxyUrl = proxy ? `${proxy}${encodeURIComponent(url)}` : url;
             const response = await fetch(proxyUrl, {
                 headers: {
+                    'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
@@ -60,8 +63,21 @@ async function proxyFetch(url) {
         }
     }
     
-    throw lastError || new Error("All proxy attempts failed");
+    // If all proxies fail, try a direct connection with no-cors mode
+    try {
+        const response = await fetch(url, { mode: 'no-cors' });
+        if (response.ok || response.type === 'opaque') {
+            return response;
+        }
+    } catch (finalError) {
+        throw lastError || finalError;
+    }
+    
+    throw lastError || new Error("All connection attempts failed");
 }
+
+// [Rest of your existing functions remain the same...]
+// generateNewEmail, checkInbox, renderEmailList, viewEmail, etc.
 
 // Generate a new random email
 function generateNewEmail() {
