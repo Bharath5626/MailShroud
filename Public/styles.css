@@ -1,82 +1,197 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f7f6;
-  color: #333;
-}
-
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  text-align: center;
-}
-
-h1 {
-  margin-bottom: 25px;
-  color: #007BFF;
-}
-
-.email-generator {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 25px;
-}
-
-#tempEmail {
-  width: 300px;
-  padding: 10px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  padding: 10px 15px;
-  border: none;
-  background-color: #007BFF;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: 0.2s;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.inbox {
-  margin-top: 40px;
-  border-top: 2px solid #ddd;
-  padding-top: 20px;
-  text-align: left;
-}
-
-.email-item {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-
-.email-item button {
-  margin-top: 10px;
-  background-color: #28a745;
-}
-
-.email-item button:hover {
-  background-color: #1e7e34;
-}
-
-.email-body {
-  background: #fff;
-  padding: 20px;
-  border: 1px solid #aaa;
-  border-radius: 6px;
-}
+:root {
+            --primary: #4f46e5;
+            --bg: #f9fafb;
+            --card: #ffffff;
+            --text: #111827;
+            --border: #e5e7eb;
+        }
+        body.dark {
+            --primary: #7c3aed;
+            --bg: #1a1a1a;
+            --card: #2d2d2d;
+            --text: #f3f4f6;
+            --border: #444;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .email-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .email-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--card);
+            color: var(--text);
+        }
+        .btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .inbox-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .refresh-status {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        .email-list {
+            list-style: none;
+        }
+        .email-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .email-item:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        body.dark .email-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .email-item.unread {
+            font-weight: 500;
+            background: rgba(79, 70, 229, 0.03);
+        }
+        body.dark .email-item.unread {
+            background: rgba(124, 58, 237, 0.1);
+        }
+        .email-preview {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .email-from {
+            font-weight: 600;
+            width: 30%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .email-subject {
+            flex: 1;
+            margin: 0 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .email-date {
+            color: #6b7280;
+            font-size: 0.85rem;
+            min-width: 70px;
+            text-align: right;
+        }
+        .email-view {
+            padding: 20px 0;
+        }
+        .email-body {
+            margin-top: 20px;
+            line-height: 1.7;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 40px 20px;
+        }
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(79, 70, 229, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--border);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+        .attachments {
+            margin-top: 20px;
+        }
+        .attachment {
+            display: inline-block;
+            padding: 8px 12px;
+            background: var(--border);
+            border-radius: 6px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }

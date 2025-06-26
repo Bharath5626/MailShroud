@@ -1,29 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Temp Mail Generator</title>
-  <link rel="stylesheet" href="styles.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TempMail Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+  
 </head>
 <body>
-  <div class="container">
-    <h1>Temporary Email Generator</h1>
+    <button class="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
 
-    <div class="email-generator">
-      <input type="text" id="tempEmail" placeholder="Generated Email" readonly />
-      <button id="generateBtn">Generate</button>
-      <button id="copyBtn">Copy</button>
+    <div class="container">
+        <header>
+            <h1>TempMail</h1>
+            <p>Disposable temporary email service</p>
+        </header>
+
+        <div class="card">
+            <div class="email-controls">
+                <input type="text" id="tempEmail" class="email-input" readonly>
+                <button id="copyBtn" class="btn btn-primary">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                <button id="newBtn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> New
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="inbox-header">
+                <h2>Inbox</h2>
+                <div class="refresh-status" id="refreshStatus"></div>
+            </div>
+            <div id="inboxContent">
+                <div class="empty-state">
+                    <p>Generate a temporary email address to start receiving messages</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="inbox">
-      <h3>Inbox</h3>
-      <div id="inboxContent">
-        <p>No emails yet.</p>
-      </div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
